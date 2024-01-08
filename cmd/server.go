@@ -11,7 +11,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/birdbox/authnz/routes"
+	"github.com/birdbox/authnz/internal"
+	"github.com/birdbox/authnz/internal/routes"
 )
 
 const defaultPort = "5000"
@@ -20,6 +21,11 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
+	}
+
+	application, err := internal.NewApplication()
+	if err != nil {
+		log.Fatalf("Could not set up application: %v", err)
 	}
 
 	addr := fmt.Sprintf(":%s", port)
@@ -38,8 +44,7 @@ func main() {
 	//}
 	//defer database.Conn.Close()
 
-	//httpHandler := handler.NewHandler(database)
-	httpHandler := routes.NewHandler()
+	httpHandler := routes.NewHandler(application)
 	server := &http.Server{
 		Handler: httpHandler,
 	}

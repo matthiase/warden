@@ -4,19 +4,25 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/birdbox/authnz/internal"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/render"
 	"github.com/rs/cors"
 )
 
-func NewHandler() http.Handler {
+var (
+	application *internal.Application
+)
+
+func NewHandler(app *internal.Application) http.Handler {
+	application = app
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
-	router.Use(render.SetContentType(render.ContentTypeJSON))
+	router.Use(middleware.SetHeader("Content-Type", "application/json"))
+	router.Use(middleware.AllowContentType("application/json"))
 
 	router.MethodNotAllowed(methodNotAllowedHandler)
 	router.NotFound(notFoundHandler)
@@ -37,17 +43,18 @@ func NewHandler() http.Handler {
 	router.Use(cors.Handler)
 
 	router.Get("/healthcheck", Healthcheck)
-	router.Route("/users", users)
+	router.Route("/registration", func(r chi.Router) {
+		r.Post("/start", createUser)
+		r.Post("/confirm", confirmUser)
+	})
 
 	return router
 }
 
 func methodNotAllowedHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(405)
-	render.Render(w, r, ErrMethodNotAllowed)
+	MethodNotAllowedError().Render(w, r)
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(404)
-	render.Render(w, r, ErrNotFound)
+	NotFoundError().Render(w, r)
 }
