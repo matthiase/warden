@@ -12,23 +12,19 @@ import (
 	"time"
 
 	"github.com/birdbox/authnz/internal"
+	"github.com/birdbox/authnz/internal/config"
 	"github.com/birdbox/authnz/internal/routes"
 )
 
-const defaultPort = "5000"
-
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
+	cfg := config.ReadEnv()
 
-	application, err := internal.NewApplication()
+	app, err := internal.NewApplication(cfg)
 	if err != nil {
 		log.Fatalf("Could not set up application: %v", err)
 	}
 
-	addr := fmt.Sprintf(":%s", port)
+	addr := fmt.Sprintf(":%d", cfg.Server.Port)
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalf("Error occurred: %s", err.Error())
@@ -44,7 +40,7 @@ func main() {
 	//}
 	//defer database.Conn.Close()
 
-	httpHandler := routes.NewHandler(application)
+	httpHandler := routes.NewHandler(app)
 	server := &http.Server{
 		Handler: httpHandler,
 	}
