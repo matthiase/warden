@@ -1,8 +1,8 @@
 package data
 
 import (
-	"github.com/birdbox/authnz/internal/data/memory"
-	"github.com/birdbox/authnz/internal/models"
+	"github.com/birdbox/authnz/data/memory"
+	"github.com/birdbox/authnz/models"
 )
 
 type UserStore interface {

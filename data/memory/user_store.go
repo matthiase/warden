@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"github.com/birdbox/authnz/internal/models"
+	"github.com/birdbox/authnz/models"
 )
 
 type UserStore struct {

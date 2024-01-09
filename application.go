@@ -1,10 +1,10 @@
-package internal
+package authnz
 
 import (
 	"log"
 
-	"github.com/birdbox/authnz/internal/config"
-	"github.com/birdbox/authnz/internal/data"
+	"github.com/birdbox/authnz/config"
+	"github.com/birdbox/authnz/data"
 )
 
 type Application struct {

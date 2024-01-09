@@ -11,15 +11,15 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/birdbox/authnz/internal"
-	"github.com/birdbox/authnz/internal/config"
-	"github.com/birdbox/authnz/internal/routes"
+	"github.com/birdbox/authnz"
+	"github.com/birdbox/authnz/config"
+	"github.com/birdbox/authnz/routes"
 )
 
 func main() {
 	cfg := config.ReadEnv()
 
-	app, err := internal.NewApplication(cfg)
+	app, err := authnz.NewApplication(cfg)
 	if err != nil {
 		log.Fatalf("Could not set up application: %v", err)
 	}
