@@ -13,11 +13,11 @@ func confirmUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	account, err := application.AccountStore.Find(data.Id)
+	user, err := application.UserStore.Find(data.Id)
 	if err != nil {
 		ApplicationError(err.Error()).Render(w, r)
 		return
-	} else if account == nil {
+	} else if user == nil {
 		NotFoundError().Render(w, r)
 		return
 	}
@@ -29,9 +29,9 @@ func confirmUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(ConfirmUserResponse{
 		User: &User{
-			Id:    account.Id,
-			Email: account.Email,
-			Name:  account.Name,
+			Id:    user.Id,
+			Email: user.Email,
+			Name:  user.Name,
 		},
 		AccessToken: "qwertyuiopasdfghjklzxcvbnm",
 	})

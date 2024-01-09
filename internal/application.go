@@ -7,17 +7,17 @@ import (
 )
 
 type Application struct {
-	AccountStore data.AccountStore
+	UserStore data.UserStore
 }
 
 func NewApplication() (*Application, error) {
-	accountStore, err := data.NewAccountStore()
+	userStore, err := data.NewUserStore()
 	if err != nil {
-		log.Fatalf("Could not set up account store: %v", err)
+		log.Fatalf("Could not set up user store: %v", err)
 		return nil, err
 	}
 
 	return &Application{
-		AccountStore: accountStore,
+		UserStore: userStore,
 	}, nil
 }

@@ -15,7 +15,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: validate the email address and name
 
-	account, err := application.AccountStore.Create(data.Name, data.Email)
+	user, err := application.UserStore.Create(data.Name, data.Email)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -29,9 +29,9 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(CreateUserResponse{
 		User: &User{
-			Id:    account.Id,
-			Email: account.Email,
-			Name:  account.Name,
+			Id:    user.Id,
+			Email: user.Email,
+			Name:  user.Name,
 		},
 		Otp: "123456",
 	})
