@@ -6,9 +6,10 @@ import (
 )
 
 type Application struct {
-	UserStore     data.UserStore
-	SessionStore  data.SessionStore
+	Config        *config.Config
 	PasscodeStore data.PasscodeStore
+	SessionStore  data.SessionStore
+	UserStore     data.UserStore
 }
 
 func NewApplication(cfg *config.Config) (*Application, error) {
@@ -28,8 +29,9 @@ func NewApplication(cfg *config.Config) (*Application, error) {
 	}
 
 	return &Application{
-		UserStore:     userStore,
-		SessionStore:  sessionStore,
+		Config:        cfg,
 		PasscodeStore: passcodeStore,
+		SessionStore:  sessionStore,
+		UserStore:     userStore,
 	}, nil
 }

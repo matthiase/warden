@@ -2,13 +2,12 @@ package data
 
 import (
 	"github.com/birdbox/authnz/data/memory"
-	"github.com/birdbox/authnz/models"
 )
 
 type PasscodeStore interface {
-	Create(userID int) (models.Passcode, error)
-	Find(t models.Passcode) (int, error)
-	Revoke(t models.Passcode) error
+	Create(userID int) (string, error)
+	Find(t string) (int, error)
+	Revoke(t string) error
 }
 
 func NewPasscodeStore() (PasscodeStore, error) {

@@ -11,11 +11,11 @@ import (
 )
 
 var (
-	application *authnz.Application
+	app *authnz.Application
 )
 
-func NewHandler(app *authnz.Application) http.Handler {
-	application = app
+func NewHandler(application *authnz.Application) http.Handler {
+	app = application
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)

@@ -2,20 +2,21 @@ package routes
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
-	"github.com/birdbox/authnz/models"
+	"github.com/birdbox/authnz/identity"
+	"github.com/birdbox/authnz/session"
 )
 
 type ConfirmUserRequest struct {
-	UserId   int    `json:"user_id"`
+	UserID   int    `json:"user_id"`
 	Passcode string `json:"passcode"`
 }
 
 type ConfirmUserResponse struct {
-	*User        `json:"user"`
-	AccessToken  string `json:"access_token"`
-	SessionToken string `json:"session_token"`
+	*User       `json:"user"`
+	AccessToken string `json:"access_token"`
 }
 
 func confirmUser(w http.ResponseWriter, r *http.Request) {
@@ -27,20 +28,20 @@ func confirmUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Look up the user id associated with the passcode
-	passcode := models.Passcode(data.Passcode)
-	userId, err := application.PasscodeStore.Find(passcode)
+	passcode := string(data.Passcode)
+	userID, err := app.PasscodeStore.Find(passcode)
 	if err != nil {
 		ApplicationError(err.Error()).Render(w, r)
 		return
 	}
 
-	if userId != data.UserId {
+	if userID != data.UserID {
 		BadRequestError("Invalid passcode").Render(w, r)
 		return
 	}
 
 	// Retrieve the user record
-	user, err := application.UserStore.Find(userId)
+	user, err := app.UserStore.Find(userID)
 	if err != nil {
 		ApplicationError(err.Error()).Render(w, r)
 		return
@@ -50,20 +51,34 @@ func confirmUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create the user session
-	sessionToken, err := application.SessionStore.Create(user.Id)
+	sessionID, err := app.SessionStore.Create(user.Id)
 	if err != nil {
-		ApplicationError(err.Error()).Render(w, r)
-		return
+		panic(err)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	// Create the session token
+	sessionTokenSecret := []byte(app.Config.SessionToken.Secret)
+	sessionClaims := session.NewSessionClaims(sessionID, app.Config)
+	sessionToken, err := sessionClaims.Sign(sessionTokenSecret)
+	if err != nil {
+		panic(err)
+	}
+	log.Println("sessionToken:", sessionToken)
+
+	// Create the access token
+	accessTokenSecret := []byte(app.Config.AccessToken.Secret)
+	identityClaims := identity.NewIdentityClaims(user.Id, sessionClaims, app.Config)
+	accessToken, err := identityClaims.Sign(accessTokenSecret)
+	if err != nil {
+		panic(err)
+	}
+
 	json.NewEncoder(w).Encode(ConfirmUserResponse{
 		User: &User{
 			Id:    user.Id,
 			Email: user.Email,
 			Name:  user.Name,
 		},
-		AccessToken:  "qwertyuiopasdfghjklzxcvbnm",
-		SessionToken: sessionToken.String(),
+		AccessToken: accessToken,
 	})
 }

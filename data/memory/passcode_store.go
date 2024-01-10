@@ -1,35 +1,33 @@
 package memory
 
 import (
-	"github.com/birdbox/authnz/models"
 	"github.com/birdbox/authnz/util"
 )
 
 type PasscodeStore struct {
-	passcodes map[models.Passcode]int
+	passcodes map[string]int
 }
 
 func NewPasscodeStore() *PasscodeStore {
 	return &PasscodeStore{
-		passcodes: make(map[models.Passcode]int),
+		passcodes: make(map[string]int),
 	}
 }
 
-func (s *PasscodeStore) Create(userID int) (models.Passcode, error) {
-	hexToken, err := util.GenerateRandomPasscode(6)
+func (s *PasscodeStore) Create(userID int) (string, error) {
+	passcode, err := util.GenerateRandomPasscode(6)
 	if err != nil {
 		return "", err
 	}
-	passcode := models.Passcode(hexToken)
 	s.passcodes[passcode] = userID
-	return models.Passcode(passcode), nil
+	return string(passcode), nil
 }
 
-func (s *PasscodeStore) Find(t models.Passcode) (int, error) {
+func (s *PasscodeStore) Find(t string) (int, error) {
 	return s.passcodes[t], nil
 }
 
-func (s *PasscodeStore) Revoke(t models.Passcode) error {
+func (s *PasscodeStore) Revoke(t string) error {
 	delete(s.passcodes, t)
 	return nil
 }
