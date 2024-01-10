@@ -1,8 +1,6 @@
 package memory
 
 import (
-	"encoding/hex"
-
 	"github.com/birdbox/authnz/models"
 	"github.com/birdbox/authnz/util"
 )
@@ -18,11 +16,11 @@ func NewSessionStore() *SessionStore {
 }
 
 func (s *SessionStore) Create(userID int) (models.SessionToken, error) {
-	binToken, err := util.RandomToken()
+	hexToken, err := util.GenerateRandomToken(16)
 	if err != nil {
 		return "", err
 	}
-	token := models.SessionToken(hex.EncodeToString(binToken))
+	token := models.SessionToken(hexToken)
 	s.sessions[userID] = append(s.sessions[userID], token)
 	return token, nil
 }

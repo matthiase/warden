@@ -5,6 +5,16 @@ import (
 	"net/http"
 )
 
+type CreateUserRequest struct {
+	Email string `json:"email"`
+	Name  string `json:"name"`
+}
+
+type CreateUserResponse struct {
+	*User    `json:"user"`
+	Passcode string `json:"passcode"`
+}
+
 func createUser(w http.ResponseWriter, r *http.Request) {
 	var data CreateUserRequest
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -15,15 +25,19 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: validate the email address and name
 
+	// TODO: ensure the email address is not already registered
+
 	user, err := application.UserStore.Create(data.Name, data.Email)
 	if err != nil {
 		ApplicationError(err.Error()).Render(w, r)
 		return
 	}
 
-	// TODO: ensure the email address is not already registered
-
-	// TODO: generate a random OTP
+	passcode, err := application.PasscodeStore.Create(user.Id)
+	if err != nil {
+		ApplicationError(err.Error()).Render(w, r)
+		return
+	}
 
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
@@ -33,6 +47,6 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 			Email: user.Email,
 			Name:  user.Name,
 		},
-		Otp: "123456",
+		Passcode: passcode.String(),
 	})
 }

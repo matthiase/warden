@@ -3,7 +3,20 @@ package routes
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/birdbox/authnz/models"
 )
+
+type ConfirmUserRequest struct {
+	UserId   int    `json:"user_id"`
+	Passcode string `json:"passcode"`
+}
+
+type ConfirmUserResponse struct {
+	*User        `json:"user"`
+	AccessToken  string `json:"access_token"`
+	SessionToken string `json:"session_token"`
+}
 
 func confirmUser(w http.ResponseWriter, r *http.Request) {
 	var data ConfirmUserRequest
@@ -13,7 +26,21 @@ func confirmUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := application.UserStore.Find(data.Id)
+	// Look up the user id associated with the passcode
+	passcode := models.Passcode(data.Passcode)
+	userId, err := application.PasscodeStore.Find(passcode)
+	if err != nil {
+		ApplicationError(err.Error()).Render(w, r)
+		return
+	}
+
+	if userId != data.UserId {
+		BadRequestError("Invalid passcode").Render(w, r)
+		return
+	}
+
+	// Retrieve the user record
+	user, err := application.UserStore.Find(userId)
 	if err != nil {
 		ApplicationError(err.Error()).Render(w, r)
 		return
@@ -22,15 +49,12 @@ func confirmUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create the user session
 	sessionToken, err := application.SessionStore.Create(user.Id)
 	if err != nil {
 		ApplicationError(err.Error()).Render(w, r)
 		return
 	}
-
-	// TODO: validate the OTP
-
-	// TODO: generate an access token
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(ConfirmUserResponse{
