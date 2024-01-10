@@ -22,6 +22,7 @@ type ConfirmUserRequest struct {
 }
 
 type ConfirmUserResponse struct {
-	*User       `json:"user"`
-	AccessToken string `json:"access_token"`
+	*User        `json:"user"`
+	AccessToken  string `json:"access_token"`
+	SessionToken string `json:"session_token"`
 }

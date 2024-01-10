@@ -9,7 +9,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	var data CreateUserRequest
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		ApplicationError(err.Error()).Render(w, r)
 		return
 	}
 
@@ -17,7 +17,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := application.UserStore.Create(data.Name, data.Email)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		ApplicationError(err.Error()).Render(w, r)
 		return
 	}
 

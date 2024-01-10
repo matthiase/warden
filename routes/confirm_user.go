@@ -22,6 +22,12 @@ func confirmUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	sessionToken, err := application.SessionStore.Create(user.Id)
+	if err != nil {
+		ApplicationError(err.Error()).Render(w, r)
+		return
+	}
+
 	// TODO: validate the OTP
 
 	// TODO: generate an access token
@@ -33,6 +39,7 @@ func confirmUser(w http.ResponseWriter, r *http.Request) {
 			Email: user.Email,
 			Name:  user.Name,
 		},
-		AccessToken: "qwertyuiopasdfghjklzxcvbnm",
+		AccessToken:  "qwertyuiopasdfghjklzxcvbnm",
+		SessionToken: sessionToken.String(),
 	})
 }
