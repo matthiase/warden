@@ -2,7 +2,6 @@ package routes
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/birdbox/authnz/identity"
@@ -63,7 +62,16 @@ func confirmUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	log.Println("sessionToken:", sessionToken)
+
+	// Set the session token as a cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     app.Config.SessionCookie.Name,
+		Value:    sessionToken,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   app.Config.SessionCookie.Secure,
+		SameSite: http.SameSiteLaxMode,
+	})
 
 	// Create the access token
 	accessTokenSecret := []byte(app.Config.AccessToken.Secret)
@@ -75,9 +83,7 @@ func confirmUser(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(ConfirmUserResponse{
 		User: &User{
-			Id:    user.Id,
-			Email: user.Email,
-			Name:  user.Name,
+			Id: user.Id,
 		},
 		AccessToken: accessToken,
 	})

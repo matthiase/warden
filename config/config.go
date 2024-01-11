@@ -14,9 +14,12 @@ type Config struct {
 		Url *url.URL
 	}
 	Server struct {
-		Host   string
-		Port   int
-		Secret string
+		Host string
+		Port int
+	}
+	SessionCookie struct {
+		Name   string
+		Secure bool
 	}
 	SessionToken struct {
 		Secret string
@@ -33,6 +36,8 @@ func ReadEnv() *Config {
 	cfg.Database.Url = parseURL("DATABASE_URL")
 	cfg.Server.Host = lookupString("SERVER_HOST", "localhost")
 	cfg.Server.Port = lookupInt("SERVER_PORT", 5000)
+	cfg.SessionCookie.Name = lookupString("SESSION_COOKIE_NAME", "authnz")
+	cfg.SessionCookie.Secure = lookupBool("SESSION_COOKIE_SECURE", false)
 	cfg.SessionToken.Secret = os.Getenv("SESSION_TOKEN_SECRET")
 	cfg.SessionToken.MaxAge = lookupInt("SESSION_TOKEN_MAX_AGE", 86400)
 	cfg.AccessToken.Secret = os.Getenv("ACCESS_TOKEN_SECRET")
@@ -65,6 +70,17 @@ func lookupInt(name string, defaultValue int) int {
 func lookupString(name string, defaultValue string) string {
 	if str, ok := os.LookupEnv(name); ok {
 		return str
+	}
+	return defaultValue
+}
+
+func lookupBool(name string, defaultValue bool) bool {
+	if str, ok := os.LookupEnv(name); ok {
+		value, err := strconv.ParseBool(str)
+		if err != nil {
+			log.Fatalf("Invalid %s", name)
+		}
+		return value
 	}
 	return defaultValue
 }
