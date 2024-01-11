@@ -6,8 +6,9 @@ import (
 )
 
 type CreateUserRequest struct {
-	Email string `json:"email"`
-	Name  string `json:"name"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
 }
 
 type CreateUserResponse struct {
@@ -27,7 +28,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: ensure the email address is not already registered
 
-	user, err := app.UserStore.Create(data.Name, data.Email)
+	user, err := app.UserStore.Create(data.FirstName, data.LastName, data.Email)
 	if err != nil {
 		ApplicationError(err.Error()).Render(w, r)
 		return
@@ -42,9 +43,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(CreateUserResponse{
 		User: &User{
-			Id:    user.Id,
-			Email: user.Email,
-			Name:  user.Name,
+			Id: user.Id,
 		},
 		Passcode: passcode,
 	})
