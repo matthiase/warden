@@ -10,12 +10,13 @@ import (
 )
 
 type Config struct {
-	Database struct {
-		Url *url.URL
-	}
-	Server struct {
+	Environment string
+	Server      struct {
 		Host string
 		Port int
+	}
+	Database struct {
+		Url *url.URL
 	}
 	SessionCookie struct {
 		Name   string
@@ -33,9 +34,10 @@ type Config struct {
 
 func ReadEnv() *Config {
 	cfg := &Config{}
-	cfg.Database.Url = parseURL("DATABASE_URL")
+	cfg.Environment = lookupString("ENVIRONMENT", "development")
 	cfg.Server.Host = lookupString("SERVER_HOST", "localhost")
 	cfg.Server.Port = lookupInt("SERVER_PORT", 5000)
+	cfg.Database.Url = parseURL("DATABASE_URL")
 	cfg.SessionCookie.Name = lookupString("SESSION_COOKIE_NAME", "authnz")
 	cfg.SessionCookie.Secure = lookupBool("SESSION_COOKIE_SECURE", false)
 	cfg.SessionToken.Secret = os.Getenv("SESSION_TOKEN_SECRET")
