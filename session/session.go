@@ -30,7 +30,7 @@ func Parse(tokenStr string, secret []byte) (*SessionClaims, error) {
 }
 
 func NewSessionClaims(sessionID string, cfg *config.Config) *SessionClaims {
-	maxAge := cfg.SessionToken.MaxAge
+	maxAge := cfg.Session.MaxAge
 	issuer := cfg.Server.Host
 	issuedAt := jwt.NewNumericDate(time.Now())
 	expiresAt := jwt.NewNumericDate(time.Now().Add(time.Duration(maxAge) * time.Second))

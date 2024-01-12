@@ -12,22 +12,19 @@ import (
 type Config struct {
 	Environment string
 	Server      struct {
-		Host string
-		Port int
+		Host   string
+		Port   int
+		Secret string
 	}
 	Database struct {
 		Url *url.URL
 	}
-	SessionCookie struct {
+	Session struct {
 		Name   string
 		Secure bool
-	}
-	SessionToken struct {
-		Secret string
 		MaxAge int
 	}
 	AccessToken struct {
-		Secret string
 		MaxAge int
 	}
 }
@@ -37,12 +34,11 @@ func ReadEnv() *Config {
 	cfg.Environment = lookupString("ENVIRONMENT", "development")
 	cfg.Server.Host = lookupString("SERVER_HOST", "localhost")
 	cfg.Server.Port = lookupInt("SERVER_PORT", 5000)
+	cfg.Server.Secret = os.Getenv("SERVER_SECRET")
 	cfg.Database.Url = parseURL("DATABASE_URL")
-	cfg.SessionCookie.Name = lookupString("SESSION_COOKIE_NAME", "authnz")
-	cfg.SessionCookie.Secure = lookupBool("SESSION_COOKIE_SECURE", false)
-	cfg.SessionToken.Secret = os.Getenv("SESSION_TOKEN_SECRET")
-	cfg.SessionToken.MaxAge = lookupInt("SESSION_TOKEN_MAX_AGE", 86400)
-	cfg.AccessToken.Secret = os.Getenv("ACCESS_TOKEN_SECRET")
+	cfg.Session.Name = lookupString("SESSION_COOKIE_NAME", "authnz")
+	cfg.Session.Secure = lookupBool("SESSION_COOKIE_SECURE", false)
+	cfg.Session.MaxAge = lookupInt("SESSION_TOKEN_MAX_AGE", 86400)
 	cfg.AccessToken.MaxAge = lookupInt("ACCESS_TOKEN_MAX_AGE", 3600)
 	return cfg
 }

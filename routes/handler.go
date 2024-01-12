@@ -27,7 +27,7 @@ func NewHandler(application *authnz.Application) http.Handler {
 	router.MethodNotAllowed(methodNotAllowedHandler)
 	router.NotFound(notFoundHandler)
 
-	allowedOrigins := []string{"*"}
+	allowedOrigins := []string{"http://localhost:3000"}
 	if len(allowedOrigins) == 0 {
 		log.Fatal("HTTP server unable to start - expected ALLOWED_ORIGINS")
 	}
@@ -43,6 +43,7 @@ func NewHandler(application *authnz.Application) http.Handler {
 	router.Use(cors.Handler)
 
 	router.Get("/healthcheck", Healthcheck)
+	router.Get("/profile", getProfile)
 	router.Route("/registration", func(r chi.Router) {
 		r.Post("/start", createUser)
 		r.Post("/confirm", confirmUser)

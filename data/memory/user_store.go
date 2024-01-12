@@ -16,13 +16,13 @@ func NewUserStore() *UserStore {
 
 func (s *UserStore) Create(firstName string, lastName string, email string) (*models.User, error) {
 	user := &models.User{
-		Id:        len(s.users) + 1,
+		ID:        len(s.users) + 1,
 		FirstName: firstName,
 		LastName:  lastName,
 		Email:     email,
 	}
 
-	s.users[user.Id] = user
+	s.users[user.ID] = user
 
 	return user, nil
 }

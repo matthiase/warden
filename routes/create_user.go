@@ -2,7 +2,11 @@ package routes
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
+
+	"github.com/birdbox/authnz/identity"
+	"github.com/birdbox/authnz/session"
 )
 
 type CreateUserRequest struct {
@@ -12,16 +16,14 @@ type CreateUserRequest struct {
 }
 
 type CreateUserResponse struct {
-	*User    `json:"user"`
-	Passcode string `json:"passcode"`
+	VerificationToken string `json:"verification_token"`
 }
 
 func createUser(w http.ResponseWriter, r *http.Request) {
 	var data CreateUserRequest
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
-		ApplicationError(err.Error()).Render(w, r)
-		return
+		panic(err)
 	}
 
 	// TODO: validate the email address and name
@@ -30,21 +32,25 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := app.UserStore.Create(data.FirstName, data.LastName, data.Email)
 	if err != nil {
-		ApplicationError(err.Error()).Render(w, r)
-		return
+		panic(err)
 	}
 
-	passcode, err := app.PasscodeStore.Create(user.Id)
+	// Create a verification token for the user. This token will be used in
+	// conjunction with the passcode to confirm the user's identity. Note that
+	// the session claims are empty because the user has not yet been confirmed.
+	identityClaims := identity.NewIdentityClaims(user.ID, &session.SessionClaims{}, app.Config)
+	verificationToken, err := identityClaims.Sign([]byte(app.Config.Server.Secret))
 	if err != nil {
-		ApplicationError(err.Error()).Render(w, r)
-		return
+		panic(err)
 	}
+
+	passcode, err := app.PasscodeStore.Create(user.ID)
+	if err != nil {
+		panic(err)
+	}
+
+	log.Printf("Created passcode %s for user %d", passcode, user.ID)
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(CreateUserResponse{
-		User: &User{
-			Id: user.Id,
-		},
-		Passcode: passcode,
-	})
+	json.NewEncoder(w).Encode(CreateUserResponse{verificationToken})
 }
