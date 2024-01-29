@@ -43,7 +43,7 @@ func NewHandler(application *authnz.Application) http.Handler {
 	router.Use(cors.Handler)
 
 	router.Get("/healthcheck", Healthcheck)
-	router.Get("/profile", getProfile)
+	router.Get("/sessions/me", getCurrentUser)
 	router.Route("/registration", func(r chi.Router) {
 		r.Post("/start", createUser)
 		r.Post("/confirm", confirmUser)

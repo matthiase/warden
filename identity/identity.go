@@ -5,15 +5,13 @@ import (
 	"time"
 
 	"github.com/birdbox/authnz/config"
-	"github.com/birdbox/authnz/session"
+	"github.com/birdbox/authnz/models"
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var scope = "authentication"
-
 type IdentityClaims struct {
-	Scope     string `json:"scope"`
-	SessionID string `json:"session_id"`
+	SessionID string `json:"sid"`
+	Name      string `json:"name"`
 	jwt.RegisteredClaims
 }
 
@@ -32,21 +30,21 @@ func Parse(tokenStr string, secret []byte) (*IdentityClaims, error) {
 	return token.Claims.(*IdentityClaims), nil
 }
 
-func NewIdentityClaims(userID int, session *session.SessionClaims, cfg *config.Config) *IdentityClaims {
-	maxAge := cfg.AccessToken.MaxAge
-	issuer := cfg.Server.Host
+func NewIdentityClaims(sessionID string, user *models.User, cfg *config.Config) *IdentityClaims {
+	maxAge := cfg.IdentityToken.MaxAge
 	issuedAt := jwt.NewNumericDate(time.Now())
 	expiresAt := jwt.NewNumericDate(time.Now().Add(time.Duration(maxAge) * time.Second))
+	fullName := user.FirstName + " " + user.LastName
 
 	return &IdentityClaims{
-		scope,
-		session.Subject,
+		sessionID,
+		fullName,
 		jwt.RegisteredClaims{
 			ExpiresAt: expiresAt,
 			IssuedAt:  issuedAt,
 			NotBefore: issuedAt,
-			Issuer:    issuer,
-			Subject:   strconv.Itoa(userID),
+			Issuer:    cfg.Server.Host,
+			Subject:   strconv.Itoa(user.ID),
 			Audience:  []string{"somebody_else"},
 		},
 	}

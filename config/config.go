@@ -24,7 +24,10 @@ type Config struct {
 		Secure bool
 		MaxAge int
 	}
-	AccessToken struct {
+	IdentityToken struct {
+		MaxAge int
+	}
+	VerificationToken struct {
 		MaxAge int
 	}
 }
@@ -39,7 +42,8 @@ func ReadEnv() *Config {
 	cfg.Session.Name = lookupString("SESSION_COOKIE_NAME", "authnz")
 	cfg.Session.Secure = lookupBool("SESSION_COOKIE_SECURE", false)
 	cfg.Session.MaxAge = lookupInt("SESSION_TOKEN_MAX_AGE", 86400)
-	cfg.AccessToken.MaxAge = lookupInt("ACCESS_TOKEN_MAX_AGE", 3600)
+	cfg.IdentityToken.MaxAge = lookupInt("IDENTITY_TOKEN_MAX_AGE", 3600)
+	cfg.VerificationToken.MaxAge = lookupInt("VERIFICATION_TOKEN_MAX_AGE", 300)
 	return cfg
 }
 

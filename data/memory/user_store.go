@@ -23,7 +23,6 @@ func (s *UserStore) Create(firstName string, lastName string, email string) (*mo
 	}
 
 	s.users[user.ID] = user
-
 	return user, nil
 }
 

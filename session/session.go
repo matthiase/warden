@@ -7,10 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var scope = "authentication"
-
 type SessionClaims struct {
-	Scope string `json:"scope"`
 	jwt.RegisteredClaims
 }
 
@@ -36,7 +33,6 @@ func NewSessionClaims(sessionID string, cfg *config.Config) *SessionClaims {
 	expiresAt := jwt.NewNumericDate(time.Now().Add(time.Duration(maxAge) * time.Second))
 
 	return &SessionClaims{
-		scope,
 		jwt.RegisteredClaims{
 			ExpiresAt: expiresAt,
 			IssuedAt:  issuedAt,
