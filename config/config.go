@@ -10,6 +10,7 @@ import (
 )
 
 type Config struct {
+	Application string
 	Environment string
 	Server      struct {
 		Host   string
@@ -30,10 +31,19 @@ type Config struct {
 	VerificationToken struct {
 		MaxAge int
 	}
+	Mailer struct {
+		Host     string
+		Port     int
+		Username string
+		Password string
+		Sender   string
+		Timeout  int
+	}
 }
 
 func ReadEnv() *Config {
 	cfg := &Config{}
+	cfg.Application = lookupString("APPLICATION_NAME", "Authnz")
 	cfg.Environment = lookupString("ENVIRONMENT", "development")
 	cfg.Server.Host = lookupString("SERVER_HOST", "localhost")
 	cfg.Server.Port = lookupInt("SERVER_PORT", 5000)
@@ -44,6 +54,12 @@ func ReadEnv() *Config {
 	cfg.Session.MaxAge = lookupInt("SESSION_TOKEN_MAX_AGE", 86400)
 	cfg.IdentityToken.MaxAge = lookupInt("IDENTITY_TOKEN_MAX_AGE", 3600)
 	cfg.VerificationToken.MaxAge = lookupInt("VERIFICATION_TOKEN_MAX_AGE", 300)
+	cfg.Mailer.Host = lookupString("SMTP_HOST", "localhost")
+	cfg.Mailer.Port = lookupInt("SMTP_PORT", 1025)
+	cfg.Mailer.Username = os.Getenv("SMTP_USERNAME")
+	cfg.Mailer.Password = os.Getenv("SMTP_PASSWORD")
+	cfg.Mailer.Sender = lookupString("SMTP_SENDER", "no-reply@localhost")
+	cfg.Mailer.Timeout = lookupInt("SMTP_TIMEOUT", 5)
 	return cfg
 }
 

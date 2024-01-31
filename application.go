@@ -1,8 +1,11 @@
 package authnz
 
 import (
+	"time"
+
 	"github.com/birdbox/authnz/config"
 	"github.com/birdbox/authnz/data"
+	"github.com/birdbox/authnz/mailer"
 )
 
 type Application struct {
@@ -10,6 +13,7 @@ type Application struct {
 	PasscodeStore data.PasscodeStore
 	SessionStore  data.SessionStore
 	UserStore     data.UserStore
+	Mailer        *mailer.Mailer
 }
 
 func NewApplication(cfg *config.Config) (*Application, error) {
@@ -28,10 +32,20 @@ func NewApplication(cfg *config.Config) (*Application, error) {
 		return nil, err
 	}
 
+	mailer := mailer.NewMailer(&mailer.MailerConfig{
+		Host:     cfg.Mailer.Host,
+		Port:     cfg.Mailer.Port,
+		Username: cfg.Mailer.Username,
+		Password: cfg.Mailer.Password,
+		Sender:   cfg.Mailer.Sender,
+		Timeout:  time.Duration(cfg.Mailer.Timeout) * time.Second,
+	})
+
 	return &Application{
 		Config:        cfg,
 		PasscodeStore: passcodeStore,
 		SessionStore:  sessionStore,
 		UserStore:     userStore,
+		Mailer:        mailer,
 	}, nil
 }

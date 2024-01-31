@@ -2,7 +2,6 @@ package routes
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"time"
 
@@ -31,15 +30,16 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	// Log the user information to the console
-	log.Printf("Created user %d: %s %s <%s>", user.ID, user.FirstName, user.LastName, user.Email)
-
 	passcode, err := app.PasscodeStore.Create(user.ID)
 	if err != nil {
 		panic(err)
 	}
 
-	log.Printf("Created passcode %s for user %d", passcode, user.ID)
+	app.Mailer.Send(user.Email, "login", map[string]interface{}{
+		"Application":   app.Config.Application,
+		"RecipientName": user.FirstName,
+		"Passcode":      passcode,
+	})
 
 	// Create a verification token for the user. This token will be used in
 	// conjunction with the passcode to confirm the user's identity.

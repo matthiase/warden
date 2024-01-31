@@ -47,8 +47,10 @@ func main() {
 	go func() {
 		server.Serve(listener)
 	}()
+
 	defer Stop(server)
 	log.Printf("Started server on %s", addr)
+
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	log.Println(fmt.Sprint(<-ch))

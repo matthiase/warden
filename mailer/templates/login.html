@@ -1,0 +1,17 @@
+{{define "subject"}} Your {{.Application}} one-time passcode {{end}}
+
+{{define "plainTextBody"}}
+Hi {{.RecipientName}},
+We received your request for a single-use code to use with your {{.Application}} account.
+Your single-use code is: {{.Passcode}}
+
+If you didn't request this code, you can safely ignore this email.
+{{end}}
+
+{{define "htmlBody"}}
+<p>Hi {{.RecipientName}},</p>
+<p>We received your request for a single-use code to use with your {{.Application}} account.</p>
+<p>Your single-use code is: {{.Passcode}}</p>
+
+<p>If you didn't request this code, you can safely ignore this email.</p>
+{{end}}
