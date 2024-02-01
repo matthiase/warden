@@ -2,9 +2,7 @@ package routes
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/birdbox/authnz/identity"
@@ -24,14 +22,12 @@ func getCurrentUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if identityToken == "" {
-		log.Println("Identity token cookie is missing")
 		// If the identity token cookie is missing, try to generate a new one using the session
 		// cookie. If the session cookie is missing, then the user is not authenticated. Since
 		// this endpoint is accessible to unauthenticated users, return an empty response instead
 		// of an error.
 		sessionTokenCookie, err := r.Cookie(app.Config.Session.Name + "_st")
 		if err != nil {
-			log.Println("Session token cookie is missing")
 			UnauthorizedError("Missing session token").Render(w, r)
 			return
 		}
@@ -84,10 +80,7 @@ func getCurrentUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, err := strconv.Atoi(identityClaims.Subject)
-	if err != nil {
-		panic(err)
-	}
+	userID := identityClaims.Subject
 
 	// Get the user from the database
 	user, err := app.UserStore.Find(userID)

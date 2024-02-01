@@ -5,8 +5,8 @@ import (
 )
 
 type SessionStore interface {
-	Create(int) (string, error)
-	Find(string) (int, error)
+	Create(string) (string, error)
+	Find(string) (string, error)
 	//Touch(t models.SessionToken, userID int) error
 	//FindAll(userID int) ([]models.SessionToken, error)
 	//Revoke(t models.SessionToken) error

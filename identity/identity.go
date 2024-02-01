@@ -1,7 +1,6 @@
 package identity
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/birdbox/authnz/config"
@@ -44,7 +43,7 @@ func NewIdentityClaims(sessionID string, user *models.User, cfg *config.Config) 
 			IssuedAt:  issuedAt,
 			NotBefore: issuedAt,
 			Issuer:    cfg.Server.Host,
-			Subject:   strconv.Itoa(user.ID),
+			Subject:   user.ID,
 			Audience:  []string{"somebody_else"},
 		},
 	}

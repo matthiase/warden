@@ -5,16 +5,16 @@ import (
 )
 
 type PasscodeStore struct {
-	passcodes map[string]int
+	passcodes map[string]string
 }
 
 func NewPasscodeStore() *PasscodeStore {
 	return &PasscodeStore{
-		passcodes: make(map[string]int),
+		passcodes: make(map[string]string),
 	}
 }
 
-func (s *PasscodeStore) Create(userID int) (string, error) {
+func (s *PasscodeStore) Create(userID string) (string, error) {
 	passcode, err := util.GenerateRandomPasscode(6)
 	if err != nil {
 		return "", err
@@ -23,7 +23,7 @@ func (s *PasscodeStore) Create(userID int) (string, error) {
 	return string(passcode), nil
 }
 
-func (s *PasscodeStore) Find(t string) (int, error) {
+func (s *PasscodeStore) Find(t string) (string, error) {
 	return s.passcodes[t], nil
 }
 

@@ -5,8 +5,8 @@ import (
 )
 
 type PasscodeStore interface {
-	Create(userID int) (string, error)
-	Find(t string) (int, error)
+	Create(userID string) (string, error)
+	Find(t string) (string, error)
 	Revoke(t string) error
 }
 

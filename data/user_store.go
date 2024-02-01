@@ -7,7 +7,7 @@ import (
 
 type UserStore interface {
 	Create(firstName string, lastName string, email string) (*models.User, error)
-	Find(id int) (*models.User, error)
+	Find(id string) (*models.User, error)
 }
 
 func NewUserStore() (UserStore, error) {

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/birdbox/authnz/identity"
@@ -31,10 +30,6 @@ func confirmUser(w http.ResponseWriter, r *http.Request) {
 
 	expectedUserID, err := app.PasscodeStore.Find(data.Passcode)
 	if err != nil {
-		panic(err)
-	}
-
-	if expectedUserID == 0 {
 		UnauthorizedError("Invalid passcode").Render(w, r)
 		return
 	}
@@ -55,11 +50,7 @@ func confirmUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	providedUserID, err := strconv.Atoi(verificationClaims.Subject)
-	if err != nil {
-		UnauthorizedError("Invalid authentication token").Render(w, r)
-		return
-	}
+	providedUserID := verificationClaims.Subject
 
 	if expectedUserID != providedUserID {
 		UnauthorizedError("Invalid authentication token").Render(w, r)

@@ -2,21 +2,22 @@ package memory
 
 import (
 	"github.com/birdbox/authnz/models"
+	"github.com/segmentio/ksuid"
 )
 
 type UserStore struct {
-	users map[int]*models.User
+	users map[string]*models.User
 }
 
 func NewUserStore() *UserStore {
 	return &UserStore{
-		users: make(map[int]*models.User),
+		users: make(map[string]*models.User),
 	}
 }
 
 func (s *UserStore) Create(firstName string, lastName string, email string) (*models.User, error) {
 	user := &models.User{
-		ID:        len(s.users) + 1,
+		ID:        ksuid.New().String(),
 		FirstName: firstName,
 		LastName:  lastName,
 		Email:     email,
@@ -26,7 +27,7 @@ func (s *UserStore) Create(firstName string, lastName string, email string) (*mo
 	return user, nil
 }
 
-func (s *UserStore) Find(id int) (*models.User, error) {
+func (s *UserStore) Find(id string) (*models.User, error) {
 	user, ok := s.users[id]
 	if !ok {
 		return nil, nil

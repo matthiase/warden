@@ -1,7 +1,6 @@
 package verification
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/birdbox/authnz/config"
@@ -27,7 +26,7 @@ func Parse(tokenStr string, secret []byte) (*VerificationClaims, error) {
 	return token.Claims.(*VerificationClaims), nil
 }
 
-func NewVerificationClaims(userID int, cfg *config.Config) *VerificationClaims {
+func NewVerificationClaims(userID string, cfg *config.Config) *VerificationClaims {
 	maxAge := cfg.VerificationToken.MaxAge
 	issuer := cfg.Server.Host
 	issuedAt := jwt.NewNumericDate(time.Now())
@@ -39,7 +38,7 @@ func NewVerificationClaims(userID int, cfg *config.Config) *VerificationClaims {
 			IssuedAt:  issuedAt,
 			NotBefore: issuedAt,
 			Issuer:    issuer,
-			Subject:   strconv.Itoa(userID),
+			Subject:   userID,
 			Audience:  []string{"somebody_else"},
 		},
 	}
