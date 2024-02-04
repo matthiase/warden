@@ -17,7 +17,13 @@ type Application struct {
 }
 
 func NewApplication(cfg *config.Config) (*Application, error) {
-	userStore, err := data.NewUserStore()
+
+	db, err := data.Connect(cfg.Database.URL)
+	if err != nil {
+		panic(err)
+	}
+
+	userStore, err := data.NewUserStore(db)
 	if err != nil {
 		return nil, err
 	}

@@ -18,7 +18,7 @@ type Config struct {
 		Secret string
 	}
 	Database struct {
-		Url *url.URL
+		URL *url.URL
 	}
 	Session struct {
 		Name   string
@@ -48,9 +48,9 @@ func ReadEnv() *Config {
 	cfg.Server.Host = lookupString("SERVER_HOST", "localhost")
 	cfg.Server.Port = lookupInt("SERVER_PORT", 5000)
 	cfg.Server.Secret = os.Getenv("SERVER_SECRET")
-	cfg.Database.Url = parseURL("DATABASE_URL")
+	cfg.Database.URL = parseURL("DATABASE_URL")
 	cfg.Session.Name = lookupString("SESSION_COOKIE_NAME", "authnz")
-	cfg.Session.Secure = lookupBool("SESSION_COOKIE_SECURE", false)
+	cfg.Session.Secure = lookupBool("FORCE_SSL", false)
 	cfg.Session.MaxAge = lookupInt("SESSION_TOKEN_MAX_AGE", 86400)
 	cfg.IdentityToken.MaxAge = lookupInt("IDENTITY_TOKEN_MAX_AGE", 3600)
 	cfg.VerificationToken.MaxAge = lookupInt("VERIFICATION_TOKEN_MAX_AGE", 300)
