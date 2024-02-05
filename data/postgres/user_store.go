@@ -1,8 +1,6 @@
 package postgres
 
 import (
-	"database/sql"
-
 	"github.com/birdbox/authnz/models"
 	"github.com/jmoiron/sqlx"
 	"github.com/segmentio/ksuid"
@@ -13,11 +11,14 @@ type UserStore struct {
 }
 
 func (db *UserStore) Find(id string) (*models.User, error) {
+	sql := `
+		SELECT id, first_name, last_name, email
+		FROM users
+		WHERE id = $1
+	`
+
 	user := models.User{}
-	err := sqlx.Get(db, &user, "SELECT * FROM users WHERE id = $1", id)
-	if err == sql.ErrNoRows {
-		return nil, nil
-	} else if err != nil {
+	if err := sqlx.Get(db, &user, sql, id); err != nil {
 		return nil, err
 	}
 	return &user, nil
@@ -45,40 +46,4 @@ func (db *UserStore) Create(firstName string, lastName string, email string) (*m
 	}
 
 	return &user, nil
-
-	//now := time.Now()
-
-	//account := &models.User{
-	//	FirstName: firstName,
-	//	LastName:  lastName,
-	//	Email:     email,
-	//}
-
-	//result, err := sqlx.NamedQuery(db,
-	//	`INSERT INTO accounts (
-	//		username,
-	//		password,
-	//		locked,
-	//		require_new_password,
-	//		password_changed_at,
-	//		created_at,
-	//		updated_at
-	//	)
-	//	VALUES (:username, :password, :locked, :require_new_password, :password_changed_at, :created_at, :updated_at)
-	//	RETURNING id`,
-	//	account,
-	//)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//defer result.Close()
-	//result.Next()
-	//var id int64
-	//err = result.Scan(&id)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//account.ID = int(id)
-
-	//return account, nil
 }

@@ -14,9 +14,15 @@ import (
 	"github.com/birdbox/authnz"
 	"github.com/birdbox/authnz/config"
 	"github.com/birdbox/authnz/routes"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		fmt.Printf("Error loading .env file: %v\n", err)
+		os.Exit(1)
+	}
+
 	cfg := config.ReadEnv()
 
 	app, err := authnz.NewApplication(cfg)
@@ -29,16 +35,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error occurred: %s", err.Error())
 	}
-
-	//dbUser, dbPassword, dbName :=
-	//    os.Getenv("POSTGRES_USER"),
-	//    os.Getenv("POSTGRES_PASSWORD"),
-	//    os.Getenv("POSTGRES_DB")
-	//database, err := db.Initialize(dbUser, dbPassword, dbName)
-	//if err != nil {
-	//    log.Fatalf("Could not set up database: %v", err)
-	//}
-	//defer database.Conn.Close()
 
 	httpHandler := routes.NewHandler(app)
 	server := &http.Server{
