@@ -18,6 +18,9 @@ type Config struct {
 	Database struct {
 		URL *url.URL
 	}
+	Redis struct {
+		URL *url.URL
+	}
 	Session struct {
 		Name   string
 		Secure bool
@@ -41,13 +44,14 @@ type Config struct {
 
 func ReadEnv() *Config {
 	cfg := &Config{}
-	cfg.Application = lookupString("APPLICATION_NAME", "Authnz")
+	cfg.Application = lookupString("APPLICATION_NAME", "Warden")
 	cfg.Environment = lookupString("ENVIRONMENT", "development")
 	cfg.Server.Host = lookupString("SERVER_HOST", "localhost")
 	cfg.Server.Port = lookupInt("SERVER_PORT", 5000)
 	cfg.Server.Secret = os.Getenv("SERVER_SECRET")
 	cfg.Database.URL = parseURL("DATABASE_URL")
-	cfg.Session.Name = lookupString("SESSION_COOKIE_NAME", "authnz")
+	cfg.Redis.URL = parseURL("REDIS_URL")
+	cfg.Session.Name = lookupString("SESSION_COOKIE_NAME", "warden")
 	cfg.Session.Secure = lookupBool("FORCE_SSL", false)
 	cfg.Session.MaxAge = lookupInt("SESSION_TOKEN_MAX_AGE", 86400)
 	cfg.IdentityToken.MaxAge = lookupInt("IDENTITY_TOKEN_MAX_AGE", 3600)

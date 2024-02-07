@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/birdbox/authnz/data/postgres"
 	"github.com/jmoiron/sqlx"
+	"github.com/matthiase/warden/data/postgres"
 )
 
 func Connect(url *url.URL) (*sqlx.DB, error) {

@@ -11,10 +11,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/birdbox/authnz"
-	"github.com/birdbox/authnz/config"
-	"github.com/birdbox/authnz/routes"
 	"github.com/joho/godotenv"
+	"github.com/matthiase/warden"
+	"github.com/matthiase/warden/config"
+	"github.com/matthiase/warden/routes"
 )
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 
 	cfg := config.ReadEnv()
 
-	app, err := authnz.NewApplication(cfg)
+	app, err := warden.NewApplication(cfg)
 	if err != nil {
 		log.Fatalf("Could not set up application: %v", err)
 	}

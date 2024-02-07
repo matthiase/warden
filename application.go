@@ -1,11 +1,13 @@
-package authnz
+package warden
 
 import (
+	"fmt"
 	"time"
 
-	"github.com/birdbox/authnz/config"
-	"github.com/birdbox/authnz/data"
-	"github.com/birdbox/authnz/mailer"
+	"github.com/matthiase/warden/config"
+	"github.com/matthiase/warden/data"
+	"github.com/matthiase/warden/data/redis"
+	"github.com/matthiase/warden/mailer"
 )
 
 type Application struct {
@@ -18,24 +20,31 @@ type Application struct {
 
 func NewApplication(cfg *config.Config) (*Application, error) {
 
-	db, err := data.Connect(cfg.Database.URL)
+	postgresClient, err := data.Connect(cfg.Database.URL)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("failed to connect to Postgres: %w", err)
 	}
 
-	userStore, err := data.NewUserStore(db)
+	redisClient, err := redis.Connect(cfg.Redis.URL)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to connect to Redis: %w", err)
 	}
 
-	sessionStore, err := data.NewSessionStore()
+	userStore, err := data.NewUserStore(postgresClient)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to initialize user store: %w", err)
 	}
 
-	passcodeStore, err := data.NewPasscodeStore()
+	sessionTTL := time.Duration(cfg.Session.MaxAge) * time.Second
+	sessionStore, err := data.NewSessionStore(redisClient, sessionTTL)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to initialize session store: %w", err)
+	}
+
+	passcodeTTL := time.Duration(cfg.VerificationToken.MaxAge) * time.Second
+	passcodeStore, err := data.NewPasscodeStore(redisClient, passcodeTTL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize passcode store: %w", err)
 	}
 
 	mailer := mailer.NewMailer(&mailer.MailerConfig{

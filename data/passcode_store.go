@@ -1,15 +1,27 @@
 package data
 
 import (
-	"github.com/birdbox/authnz/data/memory"
+	"time"
+
+	"github.com/matthiase/warden/data/memory"
+	"github.com/matthiase/warden/data/redis"
+	db "github.com/redis/go-redis/v9"
 )
 
 type PasscodeStore interface {
-	Create(userID string) (string, error)
-	Find(t string) (string, error)
-	Revoke(t string) error
+	Create(string) (string, error)
+	Find(string) (string, error)
+	Revoke(string) error
 }
 
-func NewPasscodeStore() (PasscodeStore, error) {
-	return memory.NewPasscodeStore(), nil
+func NewPasscodeStore(client *db.Client, ttl time.Duration) (PasscodeStore, error) {
+	if client == nil {
+		return memory.NewPasscodeStore(), nil
+	}
+
+	return &redis.PasscodeStore{
+		Client:    client,
+		Namespace: "az:passcode:",
+		TTL:       ttl,
+	}, nil
 }

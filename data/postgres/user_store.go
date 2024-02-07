@@ -1,8 +1,8 @@
 package postgres
 
 import (
-	"github.com/birdbox/authnz/models"
 	"github.com/jmoiron/sqlx"
+	"github.com/matthiase/warden/models"
 	"github.com/segmentio/ksuid"
 )
 

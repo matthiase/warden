@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"github.com/birdbox/authnz/util"
+	"github.com/matthiase/warden/util"
 )
 
 type PasscodeStore struct {

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/birdbox/authnz/verification"
+	"github.com/matthiase/warden/verification"
 )
 
 type CreateUserRequest struct {

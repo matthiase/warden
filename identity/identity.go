@@ -3,9 +3,9 @@ package identity
 import (
 	"time"
 
-	"github.com/birdbox/authnz/config"
-	"github.com/birdbox/authnz/models"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/matthiase/warden/config"
+	"github.com/matthiase/warden/models"
 )
 
 type IdentityClaims struct {

@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"github.com/birdbox/authnz/models"
+	"github.com/matthiase/warden/models"
 	"github.com/segmentio/ksuid"
 )
 

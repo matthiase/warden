@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/birdbox/authnz/identity"
-	"github.com/birdbox/authnz/session"
+	"github.com/matthiase/warden/identity"
+	"github.com/matthiase/warden/session"
 )
 
 type GetProfileResponse struct {

@@ -3,8 +3,8 @@ package verification
 import (
 	"time"
 
-	"github.com/birdbox/authnz/config"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/matthiase/warden/config"
 )
 
 type VerificationClaims struct {

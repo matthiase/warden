@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/birdbox/authnz/config"
-	"github.com/birdbox/authnz/data"
 	"github.com/joho/godotenv"
+	"github.com/matthiase/warden/config"
+	"github.com/matthiase/warden/data"
 )
 
 func main() {

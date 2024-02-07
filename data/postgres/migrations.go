@@ -1,8 +1,8 @@
 package postgres
 
 import (
-	"github.com/birdbox/authnz/db"
 	"github.com/jmoiron/sqlx"
+	"github.com/matthiase/warden/db"
 )
 
 var Migrations = []db.Migration{

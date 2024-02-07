@@ -4,17 +4,17 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/birdbox/authnz"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/matthiase/warden"
 	"github.com/rs/cors"
 )
 
 var (
-	app *authnz.Application
+	app *warden.Application
 )
 
-func NewHandler(application *authnz.Application) http.Handler {
+func NewHandler(application *warden.Application) http.Handler {
 	app = application
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)

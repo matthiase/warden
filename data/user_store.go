@@ -3,10 +3,10 @@ package data
 import (
 	"fmt"
 
-	"github.com/birdbox/authnz/data/memory"
-	"github.com/birdbox/authnz/data/postgres"
-	"github.com/birdbox/authnz/models"
 	"github.com/jmoiron/sqlx"
+	"github.com/matthiase/warden/data/memory"
+	"github.com/matthiase/warden/data/postgres"
+	"github.com/matthiase/warden/models"
 )
 
 type UserStore interface {
@@ -14,16 +14,15 @@ type UserStore interface {
 	Find(id string) (*models.User, error)
 }
 
-func NewUserStore(db sqlx.Ext) (UserStore, error) {
-	if db == nil {
+func NewUserStore(client sqlx.Ext) (UserStore, error) {
+	if client == nil {
 		return memory.NewUserStore(), nil
 	}
 
-	switch db.DriverName() {
+	switch client.DriverName() {
 	case "postgres":
-		return &postgres.UserStore{Ext: db}, nil
+		return &postgres.UserStore{Ext: client}, nil
 	default:
-		return nil, fmt.Errorf("unsupported driver: %v", db.DriverName())
+		return nil, fmt.Errorf("unsupported driver: %v", client.DriverName())
 	}
-
 }
