@@ -23,7 +23,7 @@ func NewSessionStore(client *db.Client, ttl time.Duration) (SessionStore, error)
 
 	return &redis.SessionStore{
 		Client:    client,
-		Namespace: "az:session:",
+		Namespace: "warden:session:",
 		TTL:       ttl,
 	}, nil
 }

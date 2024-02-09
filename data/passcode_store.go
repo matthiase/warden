@@ -21,7 +21,7 @@ func NewPasscodeStore(client *db.Client, ttl time.Duration) (PasscodeStore, erro
 
 	return &redis.PasscodeStore{
 		Client:    client,
-		Namespace: "az:passcode:",
+		Namespace: "warden:passcode:",
 		TTL:       ttl,
 	}, nil
 }
